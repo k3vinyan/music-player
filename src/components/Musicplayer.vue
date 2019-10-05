@@ -1,12 +1,11 @@
 <template>
-    <div>
-        <div class="">
-            <div class="img">
-
-            </div>
+    <div class="player-container">
+        <div v-for="song in player.songs" :key="song.id" style={background: blue}>
+            <img :src="song.artist_image_medium" />
         </div>
+        
         <button>Prev</button>
-        <button>Play</button>
+        <button @click="play">Play</button>
         <button>Next</button>
     </div>
 
@@ -15,37 +14,30 @@
 <script>
 
 import playSVG from '../assets/play.svg';
+import Player from '../js/player.js';
 
-const url = "https://api.github.com/gists/4a720690fdd07f2c1854adf0c2644613"
-
-fetch(url)
-    .then(function(data) {
-        return data.json()
-    })
-    .then(function(data) {
-        console.log(data)
-    })
+const player = new Player();
+player.fetchSongs();
 
 export default {
-    name: 'HelloWorld',
-  props: {
-    msg: String
-  },
-  template: player,
-  methods: {
-    play: function(audio) {
-      this.musicplayer.play(audio)
+    name: 'musicplayer',
+    data: function() {
+
+        return {
+            player: player
+        }
     },
-    pause: function(audio) {
-      this.musicplayer.pause(audio)
+    methods: {
+        play: function(audio) {          
+            this.player.play(audio)
+        },
+        pause: function(audio) {
+        this.player.pause(audio)
+        }
+    },
+    mounted: function() {
+        
     }
-  },
-  render: function(createElement) {
-    return player
-  },
-  mount: function() {
-    return player
-  }
 }
 </script>
 
@@ -56,4 +48,13 @@ export default {
         width:  500px;
         height: 300px;
     }
+    img {
+        width: 200px;
+        height: 200px;
+        border-radius: 100px 100px 100px 100px;
+        object-fit: cover;
+    }
+
+
+
 </style>

@@ -31,7 +31,7 @@ export default class MusicPlayer {
     }
 
     getSongs() {
-        
+        return this.songs;
     }
   
     // This should make the dom elements for the music player, you can go as far as you want with this but the only requirements are to show the album art with a play and pause button
