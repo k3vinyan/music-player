@@ -4,9 +4,14 @@
             <img class="artist" :src="song.artist_image_medium" />
         </div>
         
-        <img class="svg-icon" @click="decreaseIndex" :src="musicIcon.prev" />
-        <img class="svg-icon" @click="play" :src="musicIcon.play" />
-        <img class="svg-icon" @click="increaseIndex" :src="musicIcon.next" />
+        <img class="svg-icon" @click="previous" :src="musicIcon.prev" />
+        <template v-if="togglePlay">
+            <img class="svg-icon" @click="play" :src="musicIcon.play" />
+        </template>  
+        <template v-else>
+            <img class="svg-icon" @click="pause" :src="musicIcon.pause" />
+        </template>     
+        <img class="svg-icon" @click="next" :src="musicIcon.next" />
     </div>
 
 </template>
@@ -35,17 +40,52 @@ export default {
                 prev: prevSVG,
                 next: nextSVG
             },
-            currentActiveIndex: 1
+            currentActiveIndex: 1,
+            currentAudio: null,
+            togglePlay: true
         }
     },
     methods: {
-        play: function() {
+        play: function(id) {
+            if(this.currentAudio !== null) {
+                this.currentAudio.pause();
+            }
+            this.togglePlayPause();
+            
             const src = this.player.songs[this.currentActiveIndex - 1].track1_preview;
             const audio = new Audio(src);
+            this.currentAudio = audio;
+            audio.volume = 0.05;
             audio.play();
+            
         },
-        pause: function(audio) {
-        this.player.pause(audio)
+        pause: function() {
+            this.togglePlay = !this.togglePlay;
+            this.currentAudio.pause();
+        },
+        next: function() {
+            this.increaseIndex();
+            this.play();
+        },
+        previous: function() {
+            if(this.currentActiveIndex === 1) {
+                return;
+            }
+            this.decreaseIndex();
+            this.play();
+        },
+        isPlaying: function() {
+            if(this.currentAudio === null) {
+                return true;
+            }
+            return this.currentAudio.paused;
+        },
+        togglePlayPause: function() {
+            if(this.isPlaying()) {
+                this.togglePlay = false;
+            } else {
+                this.togglePlay = true;
+            }
         },
         showCard: function(id) {
             if(id !== this.currentActiveIndex) {
@@ -63,6 +103,10 @@ export default {
         increaseIndex: function() {
             this.currentActiveIndex++;
 
+        },
+        togglePlayfunction: function() {
+            console.log(this.togglePlay)
+            return !this.togglePlay;
         }
 
        
