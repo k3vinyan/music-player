@@ -1,17 +1,36 @@
 <template>
     <div class="player-container">
-        <div v-for="song in player.songs" :key="song.id" class="card" :class="{ hide: showCard(song.id) }" :style="{backgroundImage: 'url(' + song.artist_image_medium +')'}">
+        <div v-for="song in player.songs" :key="song.id" class="card" :class="{ hide: showCard(song.id) }" >
+            <div class="card-background" :style="{backgroundImage: 'url(' + song.artist_image_medium +')'}"></div>
+           
             <img class="artist" :src="song.artist_image_medium" />
+             <p>
+                {{song.track1_name}}
+            </p>
+            <p>
+                {{song.artistexpand_value}}
+            </p>
         </div>
         
-        <img class="svg-icon" @click="previous" :src="musicIcon.prev" />
-        <template v-if="togglePlay">
-            <img class="svg-icon" @click="play" :src="musicIcon.play" />
-        </template>  
-        <template v-else>
-            <img class="svg-icon" @click="pause" :src="musicIcon.pause" />
-        </template>     
-        <img class="svg-icon" @click="next" :src="musicIcon.next" />
+       
+        <div class="player-controls">
+            <div class="bar">Progress bar</div>
+            <div class="controls">
+                <img class="svg-icon" @click="previous" :src="musicIcon.prev" />
+                <template v-if="togglePlay">
+                    <img class="svg-icon" @click="play" :src="musicIcon.play" />
+                </template>  
+                <template v-else>
+                    <img class="svg-icon" @click="pause" :src="musicIcon.pause" />
+                </template>     
+            <img class="svg-icon" @click="next" :src="musicIcon.next" />
+            </div>  
+        </div>
+
+        <div>
+            
+        </div>
+        
     </div>
 
 </template>
@@ -26,7 +45,6 @@ import prevSVG  from '../../public/images/previous.svg';
 
 const player = new Player();
 player.fetchSongs();
-
 
 
 export default {
@@ -54,9 +72,11 @@ export default {
             
             const src = this.player.songs[this.currentActiveIndex - 1].track1_preview;
             const audio = new Audio(src);
+            console.dir(audio)
             this.currentAudio = audio;
-            audio.volume = 0.05;
+            audio.volume = 0.5;
             audio.play();
+            this.print();
             
         },
         pause: function() {
@@ -73,6 +93,9 @@ export default {
             }
             this.decreaseIndex();
             this.play();
+        },
+        volume: function(value) {
+            console.log(value)
         },
         isPlaying: function() {
             if(this.currentAudio === null) {
@@ -107,9 +130,10 @@ export default {
         togglePlayfunction: function() {
             console.log(this.togglePlay)
             return !this.togglePlay;
+        },
+        print: function() {
+            console.log(this.player.songs[0])
         }
-
-       
     }
 }
 </script>
@@ -118,33 +142,64 @@ export default {
     div {
         display: inline-block;
         border: solid 1px black;
-        width:  500px;
-        height: 300px;
+        width:  600px;
+        height: 400px;
+        color: white;
     }
     .player-container {
         display: flex;
+        position: relative;
+        flex-direction: column;
     }
-
-
+    .player-controls {
+        display: flex;
+        align-items: flex-end;
+        align-content: flex-end;
+        flex-direction: column;
+    }
+    div.bar {
+        height: fit-content;
+    }
+    div.controls {
+        height: fit-content;
+    }
     .hide {
-        display: none;
+        display: none !important;
     }
 
-    .artist {
+    .card {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .card .artist {
         width: 200px;
         height: 200px;
         border-radius: 100px 100px 100px 100px;
+        margin-top: 50px;
         object-fit: cover;
     }
-    .card {
+
+    .card-background {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: -100;
+        justify-content: center;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
-        filter: grayscale(100%);
+        filter: blur(5px);
+    }
+
+    .card img {
+        margin: 5px 5px 5px 5px;
     }
 
     .svg-icon {
-        width: 75px;
+        width: 25px;
         height: auto;
+        margin: 5px 5px 5px 5px;
     }
 </style>
