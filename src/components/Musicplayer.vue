@@ -27,6 +27,16 @@
             </div>  
         </div>
 
+        <div class="seeker-container">
+            <template v-if="this.currentAudio !== null">
+               
+            </template>
+        </div>
+        
+        <div class="slide-container" @input="slider">
+        <img class="svg-icon" :src="musicIcon.volumeON" id="volume-icon" />
+            <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+        </div>
         <div>
             
         </div>
@@ -37,15 +47,13 @@
 
 <script>
 
-import Player   from '../js/player.js';
-import playSVG  from '../../public/images/play.svg';
-import pauseSVG from '../../public/images/pause.svg';
-import nextSVG  from '../../public/images/next.svg';
-import prevSVG  from '../../public/images/previous.svg';
-
-const player = new Player();
-player.fetchSongs();
-
+import player      from '../js/player.js';
+import playSVG      from '../../public/images/play.svg';
+import pauseSVG     from '../../public/images/pause.svg';
+import nextSVG      from '../../public/images/next.svg';
+import prevSVG      from    '../../public/images/previous.svg';
+import volumeOnSVG  from '../../public/images/volume-on.svg';
+import volumeOffSVG from '../../public/images/volume-off.svg';
 
 export default {
     name: 'musicplayer',
@@ -56,10 +64,12 @@ export default {
                 play: playSVG,
                 pause: pauseSVG,
                 prev: prevSVG,
-                next: nextSVG
+                next: nextSVG,
+                volumeON: volumeOnSVG
             },
             currentActiveIndex: 1,
-            currentAudio: null,
+            currentAudio: this.test(),
+            currentVolume: 0.5,
             togglePlay: true
         }
     },
@@ -72,9 +82,8 @@ export default {
             
             const src = this.player.songs[this.currentActiveIndex - 1].track1_preview;
             const audio = new Audio(src);
-            console.dir(audio)
             this.currentAudio = audio;
-            audio.volume = 0.5;
+            audio.volume = this.currentVolume;
             audio.play();
             this.print();
             
@@ -94,8 +103,17 @@ export default {
             this.decreaseIndex();
             this.play();
         },
-        volume: function(value) {
-            console.log(value)
+        setVolume: function(value) {
+            if(this.currentAudio == null) { 
+                return;
+            }
+            this.currentVolume = value * 0.01;
+            this.changeVolumeIcon(this.currentVolume);
+            this.updateVolume(this.currentVolume);
+        },
+        updateVolume: function(value) {
+            this.currentAudio.volume = this.currentVolume;
+            console.log(this.currentAudio.currentTime)
         },
         isPlaying: function() {
             if(this.currentAudio === null) {
@@ -128,11 +146,30 @@ export default {
 
         },
         togglePlayfunction: function() {
-            console.log(this.togglePlay)
             return !this.togglePlay;
         },
         print: function() {
             console.log(this.player.songs[0])
+        },
+        slider: function(el) {
+            const sliderValue = el.target.value;
+            this.setVolume(sliderValue);
+        },
+        changeVolumeIcon: function(value) {
+                let el = document.getElementById('volume-icon');
+            if(value === 0) {
+                el.src= volumeOffSVG;
+            } else {
+                el.src = volumeOnSVG;
+            }
+        },
+        test: function() {
+            
+        }
+    },
+    computed: {
+        setIntitalAudio: function() {
+            console.log("cat")
         }
     }
 }

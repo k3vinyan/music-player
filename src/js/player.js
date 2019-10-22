@@ -1,4 +1,4 @@
-export default class MusicPlayer {
+class MusicPlayer {
     constructor() {
         this.songs = null;
     }
@@ -33,6 +33,21 @@ export default class MusicPlayer {
     getSongs() {
         return this.songs;
     }
+
+    getSongPromise(index) {
+
+        const song = this.songs[index];
+        
+        const promise = new Promise(function(res, rej) {
+            if(res) {
+                res(song)
+            } else {
+                rej("fail")
+            }
+        })
+
+        return promise;
+    }
   
     // This should make the dom elements for the music player, you can go as far as you want with this but the only requirements are to show the album art with a play and pause button
     // Feel free to organize the code however you would like to
@@ -61,5 +76,16 @@ export default class MusicPlayer {
 
         return container;
     }
-  }
+  };
+
+  const player = new MusicPlayer();
+  player.fetchSongs();
+
+  player.getSongPromise(0).then(function(data) {
+      console.log(data)
+  })
+
+
+
+  export default player;
   
